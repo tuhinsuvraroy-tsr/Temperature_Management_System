@@ -1,94 +1,45 @@
-# Smart Climate Monitoring Dashboard
+# Temperature Management System
 
-## Overview
+This rewrite uses a plain Node.js HTTP server, MongoDB Atlas, and Google Identity Services. It has no backend framework and stores a new, timestamped reading for each active ESP every minute.
 
-This project is a React.js-based dashboard for monitoring temperature and humidity across multiple locations. It provides a clear and interactive interface with real-time updates and data visualization.
+## Folders
 
-The application is designed with a component-based architecture and focuses on simplicity, scalability, and clean UI design.
+- `Frontend/` — static dashboard (HTML, CSS, browser JavaScript)
+- `Backend/` — the small Node.js HTTP server and API routes
+- `Database/` — MongoDB connection and reading queries
+- `Authentication/` — Google ID-token verification and short-lived dashboard sessions
 
----
+Each folder can be owned by a different student. `Backend/` is the only folder
+that installs Node packages and starts the application; it imports the focused
+database and authentication modules from their sibling folders.
 
-## Features
+## Local setup
 
-* Time-based dynamic background (dawn, day, dusk, night)
-* Live clock updated in real time
-* Temperature and humidity display for multiple locations
-* Conditional styling based on temperature levels
-* 24-hour temperature trend visualization using charts
-* Daily minimum and maximum temperature insights
-* Automatic calculation of average temperature and humidity
+1. `Backend/.env` is already configured locally with the MongoDB URI, Google client ID, and a generated device key. It is ignored by Git; do not share it.
+2. In Google Cloud Console, add `http://localhost:3000` and `https://tmsnst.vercel.app` as authorized JavaScript origins for the supplied **Web application** client.
+3. From `Backend/`, run `npm install` and then `npm start`.
+4. Open `http://localhost:3000` and sign in.
 
----
+## Deploying the existing Vercel frontend
 
-## Tech Stack
+The Node API must run on a Node-capable host with a public HTTPS address. Put that address in `Frontend/config.js` as `apiBaseUrl`, replace `YOUR_BACKEND_DOMAIN` in the Central ESP sketch with that address, and add the host address to the Google OAuth client's authorized JavaScript origins. Upload only the contents of `Frontend/` to the static frontend host.
 
-* **Frontend:** React for building a component-based user interface
-* **UI Library:** Ant Design for responsive layout and pre-built components
-* **Charts:** Chart.js integrated using react-chartjs-2 for data visualization
-* **Styling:** Custom CSS for animations, layout, and glassmorphism design
-* **Data Handling:** JavaScript with API-ready structure for future backend integration
+### Getting the public backend URL
 
----
+A host creates this URL when the Node server is deployed. For a persistent service, create a **Web Service** on Render, set its **Root Directory** to `Temperature_Management_System/Backend`, its build command to `npm install`, and its start command to `npm start`. Enter the values from `Backend/.env` as environment variables in the service settings. Render then displays a URL such as `https://temperature-api.onrender.com` in its dashboard. Do not upload `Backend/.env`; enter its values in the host's private environment-variable form instead.
 
-## Project Structure
+The included `Backend/requirements.txt` is an explanatory file only; this is a Node.js project and Render uses `Backend/package.json` to install its dependencies.
 
-```bash
-src/
-├── components/
-│   ├── Background.jsx
-│   ├── Header.jsx
-│   ├── HeroStats.jsx
-│   ├── LocationsGrid.jsx
-│   ├── LocationCard.jsx
-│   ├── MinMaxSection.jsx
-│   ├── HistoryChart.jsx
-│   └── Footer.jsx
-│
-├── data/
-│   └── locations.js
-│
-├── utils/
-│   ├── calculations.js
-│   ├── timeUtils.js
-│   └── chartUtils.js
-│
-├── styles/
-│   └── global.css
-│
-├── App.jsx
-└── main.jsx
-```
+After Render supplies the URL, use these exact forms:
 
----
+- `Frontend/config.js` → `apiBaseUrl: 'https://temperature-api.onrender.com'`
+- Central ESP → `BACKEND_READINGS_URL = "https://temperature-api.onrender.com/api/readings"`
+- Google Cloud OAuth authorized JavaScript origins → `https://tmsnst.vercel.app` (and `https://temperature-api.onrender.com` only if the frontend is also served by the Node server)
 
-## Installation
+For a short local demonstration without deploying, a tunnel such as Cloudflare Tunnel can provide a temporary HTTPS URL. The computer running the Node server must stay on, and the temporary address can change, so it is unsuitable for the permanent ESP setup.
 
-```bash
-git clone <your-repo-link>
-cd climate-dashboard
-npm install
-npm run dev
-```
+## ESP data flow
 
----
+`Peripheral ESP → Central ESP on local Wi-Fi → POST /api/readings → MongoDB Atlas → dashboard`
 
-## Notes
-
-* The UI is built using custom CSS and integrated with Ant Design components.
-* Data structure is prepared for backend or API integration.
-* Random data used for charts and statistics is stable per page load.
-
----
-
-## Future Improvements
-
-* Integration with real-time data sources
-* Backend support for persistent data
-* User authentication and role-based access
-* Improved analytics and reporting features
-
----
-
-## Summary
-
-This project demonstrates the ability to build a structured, maintainable, and interactive frontend dashboard using modern React practices.
+The Central ESP uploads once per minute to create useful history without filling the database with one entry per second. The browser refreshes the latest cards and real graph every 30 seconds.

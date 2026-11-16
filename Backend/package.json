@@ -1,0 +1,17 @@
+{
+  "name": "temperature-management-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Plain Node.js backend for the temperature management system",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "google-auth-library": "^10.5.0",
+    "mongodb": "^7.0.0"
+  }
+}
