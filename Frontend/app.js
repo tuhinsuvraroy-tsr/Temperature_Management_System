@@ -1,7 +1,7 @@
 const config = window.APP_CONFIG || {};
 const apiBaseUrl = (config.apiBaseUrl || '').replace(/\/$/, '');
 const deviceNames = { esp1: 'A Block', esp2: 'B Block', esp3: 'C Block', esp4: 'Learners Arena', esp5: 'Residency 2' };
-const deviceColors = ['#64d5ff', '#ff9070', '#79e5a4', '#fbc96a', '#c5a0ff'];
+const deviceColors = ['#a855f7', '#fb7185', '#06d6a0', '#facc15', '#38bdf8'];
 let chart;
 
 function token() { return sessionStorage.getItem('temperature_session'); }
@@ -35,7 +35,7 @@ function renderGoogleButton() {
     if (!window.google?.accounts?.id) return;
     clearInterval(waitForGoogle);
     google.accounts.id.initialize({ client_id: config.googleClientId, callback: window.handleGoogleCredential });
-    google.accounts.id.renderButton(document.getElementById('google-signin'), { theme: 'outline', size: 'large', text: 'signin_with' });
+    google.accounts.id.renderButton(document.getElementById('google-signin'), { theme: 'filled_black', size: 'large', text: 'signin_with', shape: 'pill' });
   }, 100);
 }
 
@@ -71,9 +71,72 @@ function showLatest(readings) {
 function showHistory(readings) {
   const groups = new Map();
   readings.forEach((reading) => { if (!groups.has(reading.deviceId)) groups.set(reading.deviceId, []); groups.get(reading.deviceId).push(reading); });
-  const datasets = [...groups.entries()].map(([deviceId, values], index) => ({ label: deviceNames[deviceId] || deviceId, data: values.map((reading) => ({ x: reading.recordedAt, y: reading.temperature })), borderColor: deviceColors[index % deviceColors.length], backgroundColor: deviceColors[index % deviceColors.length], tension: .25, pointRadius: 1.5, borderWidth: 2 }));
+  const datasets = [...groups.entries()].map(([deviceId, values], index) => ({
+    label: deviceNames[deviceId] || deviceId,
+    data: values.map((reading) => ({ x: reading.recordedAt, y: reading.temperature })),
+    borderColor: deviceColors[index % deviceColors.length],
+    backgroundColor: deviceColors[index % deviceColors.length] + '18',
+    tension: 0.4,
+    pointRadius: 2,
+    pointHoverRadius: 6,
+    borderWidth: 2.5,
+    fill: true
+  }));
   chart?.destroy();
-  chart = new Chart(document.getElementById('history-chart'), { type: 'line', data: { datasets }, options: { responsive: true, maintainAspectRatio: false, parsing: false, interaction: { mode: 'nearest', intersect: false }, plugins: { legend: { labels: { color: '#dbefff' } }, tooltip: { callbacks: { title: (items) => localTime(items[0].parsed.x), label: (item) => `${item.dataset.label}: ${item.parsed.y.toFixed(1)}°C` } } }, scales: { x: { type: 'linear', ticks: { color: '#a9c0d2', callback: (value) => new Date(value).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }), maxTicksLimit: 8 }, grid: { color: 'rgba(169,192,210,.13)' } }, y: { ticks: { color: '#a9c0d2', callback: (value) => `${value}°C` }, grid: { color: 'rgba(169,192,210,.13)' } } } } });
+  chart = new Chart(document.getElementById('history-chart'), {
+    type: 'line',
+    data: { datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      parsing: false,
+      interaction: { mode: 'nearest', intersect: false },
+      plugins: {
+        legend: {
+          labels: {
+            color: '#c8d6e5',
+            font: { family: "'Inter', system-ui, sans-serif", weight: 600, size: 12 },
+            usePointStyle: true,
+            pointStyle: 'circle',
+            padding: 20
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(18, 18, 40, 0.92)',
+          borderColor: 'rgba(168, 85, 247, 0.3)',
+          borderWidth: 1,
+          titleFont: { family: "'Inter', system-ui, sans-serif", weight: 700 },
+          bodyFont: { family: "'Inter', system-ui, sans-serif" },
+          cornerRadius: 12,
+          padding: 14,
+          callbacks: {
+            title: (items) => localTime(items[0].parsed.x),
+            label: (item) => ` ${item.dataset.label}: ${item.parsed.y.toFixed(1)}°C`
+          }
+        }
+      },
+      scales: {
+        x: {
+          type: 'linear',
+          ticks: {
+            color: '#6b7c8f',
+            font: { family: "'Inter', system-ui, sans-serif", size: 11 },
+            callback: (value) => new Date(value).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+            maxTicksLimit: 8
+          },
+          grid: { color: 'rgba(168, 85, 247, 0.06)' }
+        },
+        y: {
+          ticks: {
+            color: '#6b7c8f',
+            font: { family: "'Inter', system-ui, sans-serif", size: 11 },
+            callback: (value) => `${value}°C`
+          },
+          grid: { color: 'rgba(168, 85, 247, 0.06)' }
+        }
+      }
+    }
+  });
   setMessage('chart-message', readings.length ? '' : 'No history has been recorded in the last 24 hours.');
 }
 
