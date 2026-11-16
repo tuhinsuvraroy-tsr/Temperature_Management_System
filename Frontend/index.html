@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Live campus temperature and humidity dashboard" />
+    <title>Temperature Management System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <div class="header-content">
+        <div><span class="brand-mark">◉</span> Temperature Management System</div>
+        <div id="account-area"></div>
+      </div>
+    </header>
+
+    <main>
+      <section id="login-panel" class="panel login-panel">
+        <p class="eyebrow">PRIVATE CAMPUS DASHBOARD</p>
+        <h1>Live temperature tracking</h1>
+        <p>Sign in with your Google account to view the latest readings and real sensor history.</p>
+        <div id="google-signin"></div>
+        <p id="login-message" class="message"></p>
+      </section>
+
+      <section id="dashboard" hidden>
+        <div class="dashboard-heading">
+          <div>
+            <p class="eyebrow">LIVE SENSOR DATA</p>
+            <h1>Campus conditions</h1>
+          </div>
+          <p id="updated-at" class="muted">Loading latest readings…</p>
+        </div>
+
+        <section class="summary-grid" aria-label="Average readings">
+          <article class="panel summary-card"><span>Average temperature</span><strong id="average-temperature">—</strong><small>°C across active sensors</small></article>
+          <article class="panel summary-card"><span>Average humidity</span><strong id="average-humidity">—</strong><small>% across active sensors</small></article>
+          <article class="panel summary-card"><span>Active locations</span><strong id="active-locations">—</strong><small>last reported sensors</small></article>
+        </section>
+
+        <section id="location-grid" class="location-grid" aria-live="polite"></section>
+
+        <section class="panel chart-panel">
+          <div class="chart-heading">
+            <div><p class="eyebrow">REAL SENSOR HISTORY</p><h2>Temperature over the last 24 hours</h2></div>
+            <button id="refresh-button" type="button">Refresh now</button>
+          </div>
+          <div class="chart-wrap"><canvas id="history-chart"></canvas></div>
+          <p id="chart-message" class="message"></p>
+        </section>
+      </section>
+    </main>
+
+    <script src="config.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
