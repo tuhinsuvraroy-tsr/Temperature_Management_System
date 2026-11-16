@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="440" viewBox="0 0 1100 440">
+<style>text{font-family:Arial,sans-serif;fill:#172033}.box{fill:#f8fbff;stroke:#2563eb;stroke-width:2}.head{fill:#2563eb}.white{fill:#fff;font-weight:bold}.attr{font-size:18px}.title{font-size:24px;font-weight:bold}.line{stroke:#64748b;stroke-width:3}</style>
+<rect width="1100" height="440" fill="#fff"/><text x="35" y="45" class="title">Temperature Management System — ER diagram</text>
+<g transform="translate(45,110)"><rect class="box" width="275" height="170" rx="10"/><rect class="head" width="275" height="40" rx="10"/><text x="16" y="27" class="white">locations</text><text x="16" y="75" class="attr">PK location_id</text><text x="16" y="105" class="attr">UQ name</text><text x="16" y="135" class="attr">created_at</text></g>
+<g transform="translate(415,110)"><rect class="box" width="290" height="185" rx="10"/><rect class="head" width="290" height="40" rx="10"/><text x="16" y="27" class="white">sensor_nodes</text><text x="16" y="75" class="attr">PK device_id</text><text x="16" y="105" class="attr">FK location_id</text><text x="16" y="135" class="attr">display_name, active</text></g>
+<g transform="translate(800,110)"><rect class="box" width="260" height="185" rx="10"/><rect class="head" width="260" height="40" rx="10"/><text x="16" y="27" class="white">sensor_readings</text><text x="16" y="75" class="attr">PK/FK device_id</text><text x="16" y="105" class="attr">PK recorded_at</text><text x="16" y="135" class="attr">temperature_c, humidity_pct</text></g>
+<path class="line" d="M320 195 L415 195"/><path class="line" d="M705 205 L800 205"/><text x="332" y="180" class="attr">1 : N</text><text x="715" y="190" class="attr">1 : N</text>
+</svg>
